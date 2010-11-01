@@ -200,6 +200,7 @@ loglevel 3
     chown root system /proc/sysrq-trigger
     chmod 0220 /proc/sysrq-trigger
     
+    mkdir /efs
     mount rfs /dev/block/stl3 /efs nosuid nodev check=no
     chown radio radio /efs
     chmod 0771 /efs
