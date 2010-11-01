@@ -26,28 +26,25 @@ loglevel 3
 # to enable wifi
      setprop wifi.interface "eth0"
 # end of wifi
-	
+
 #samsung dpram modules
     mknod 0666 /dev/dpram0 c 255 1
     mknod 0666 /dev/dpram1 c 255 2
     mknod 0666 /dev/dpramerr c 255 0
 
 # ppp modules
-    mknod 0666 /dev/ppp c 108 0	
+    mknod 0666 /dev/ppp c 108 0
  
-# Insert all modules here
-    mkdir /lib/modules
-    insmod /lib/modules/fsr.ko
-    insmod /lib/modules/fsr_stl.ko
-    insmod /lib/modules/rfs_glue.ko
-    insmod /lib/modules/rfs_fat.ko
-    insmod /lib/modules/j4fs.ko
-    #added by khoonk for parameter reading on 20100321
-    mount j4fs /dev/block/stl6 /mnt/.lfs
-    #added by khoonk for parameter reading on 20100321
-    insmod /lib/modules/param.ko
-    insmod /lib/modules/dpram.ko
-    insmod /lib/modules/multipdp.ko
+# ko files for 3D
+    insmod /lib/modules/pvrsrvkm.ko
+    insmod /lib/modules/s3c_lcd.ko
+    insmod /lib/modules/s3c_bc.ko
+
+# ko files for vibrator
+    insmod /lib/modules/vibrator.ko
+
+# ko files for Fm radio
+    insmod /lib/modules/Si4709_driver.ko
 
 # create mountpoints
     mkdir /mnt 0775 root system
@@ -57,6 +54,18 @@ loglevel 3
     mkdir /acct
     mount cgroup none /acct cpuacct
     mkdir /acct/uid
+
+# ko files for RFS
+    insmod /lib/modules/fsr.ko
+    insmod /lib/modules/fsr_stl.ko
+    insmod /lib/modules/rfs_glue.ko
+    insmod /lib/modules/rfs_fat.ko
+
+# parameter block
+    mkdir /mnt/.lfs 0755 root root
+    insmod /lib/modules/j4fs.ko
+    mount j4fs /dev/block/stl6 /mnt/.lfs
+    insmod /lib/modules/param.ko
 
 # Backwards Compat - XXX: Going away in G*
     symlink /mnt/sdcard /sdcard
@@ -74,15 +83,15 @@ loglevel 3
 
     # Directory-target for where the secure container
     # imagefile directory will be bind-mounted
-    mkdir /mnt/secure/asec  0700 root root
+    mkdir /mnt/secure/asec 0700 root root
 
     # Secure container public mount points.
-    mkdir /mnt/asec  0700 root system
+    mkdir /mnt/asec 0700 root system
     mount tmpfs tmpfs /mnt/asec mode=0755,gid=1000
 
     mkdir /sd-ext 0771 system system
     
-# create SEC_INTERNAL_STORAGE 1/2   
+# create SEC_INTERNAL_STORAGE 1/2
     #mkdir /userdata 0771 system system
     #chown system system /userdata
     #chmod 0771 /userdata
@@ -133,7 +142,7 @@ loglevel 3
     chown system system /data
     chmod 0771 /data
    
-##    To Add the partition in Movinand of GT-I9000
+## To Add the partition in Movinand of GT-I9000
     #mkdir /mnt/sdcard/tmo
     #mount rfs /dev/block/mmcblk0p3 /mnt/sdcard/tmo nosuid nodev check=no
     #chown system system /mnt/sdcard/tmo
@@ -192,7 +201,6 @@ loglevel 3
     chmod 0220 /proc/sysrq-trigger
     
     mount rfs /dev/block/stl3 /efs nosuid nodev check=no
-    #chown system system /efs
     chown radio radio /efs
     chmod 0771 /efs
 
@@ -201,7 +209,7 @@ loglevel 3
     chown system /data/gps
     chmod 771 /data/gps
 
-    # GPS development for broadcom.    
+    # GPS development for broadcom.
     #chmod 0777 /system/bin/gpsd/glgps_samsungJupiter
     #chmod 0666 /system/lib/libgps.so
     chmod 600 /system/etc/secgps.conf
@@ -224,7 +232,6 @@ loglevel 3
     mkdir /data/app-private 0771 system system
     mkdir /data/app 0771 system system
     mkdir /data/property 0700 root root
-
 
 # to enable wifi
     mkdir /data/wifi 0777 wifi wifi
@@ -261,23 +268,23 @@ loglevel 3
     chown root root /data/property
     chmod 0700 /data/property
 
-    # create log system 
-    mkdir /data/log 0777 root root 
+    # create log system
+    mkdir /data/log 0777 root root
     chmod 0777 /data/log
-	chmod 0777 /data/anr	
+    chmod 0777 /data/anr
 
     chmod 0666 /dev/log/radio
     chmod 0666 /dev/log/main
-    chmod 0666 /dev/log/event    
-	
-   	# create dump camera
-    mkdir /data/dump  0777 root root 
+    chmod 0666 /dev/log/event
+
+    # create dump camera
+    mkdir /data/dump 0777 root root
     chmod 0777 /data/dump
-	
+
     # create fota delta dir
     mkdir /data/fota 0777 root root
     chmod 0777 /data/fota
-	
+
     # create dalvik-cache and double-check the perms
     mkdir /data/dalvik-cache 0771 system system
     chown system system /data/dalvik-cache
@@ -297,23 +304,28 @@ loglevel 3
     chown root root /cache/lost+found
     chmod 0770 /cache/lost+found
 
+    chown radio radio /dev/dpramerr
+    chown radio radio /dev/dpram0
+    chown radio radio /dev/dpram1
+    chown radio radio /dev/dpram2
+    chown radio radio /dev/onedram_rfs
+    chown radio radio /dev/multipdp
+
+# mount modules
+# insmod /lib/modules/dpram.ko
+# insmod /lib/modules/multipdp.ko
+    insmod /lib/modules/onedram.ko
+    insmod /lib/modules/svnet.ko
+    insmod /lib/modules/modemctl.ko
+    insmod /lib/modules/storage.ko
+    insmod /lib/modules/bthid.ko
+
     # allow net_raw to have access to /dev/socket directory
     chown root net_raw /dev/socket
     chmod 0775 /dev/socket
   
     # permissions for MTP device node
     chmod 0777 /dev/usb_mtp_gadget
-
-    # ko files for 3D
-    insmod /lib/modules/pvrsrvkm.ko
-    insmod /lib/modules/s3c_lcd.ko
-    insmod /lib/modules/s3c_bc.ko
-    #insmod /modules/bc_example.ko
-
-    # load FM Radio module
-    insmod /lib/modules/Si4709_driver.ko
-    insmod /lib/modules/vibrator.ko
-    insmod /lib/modules/melfas_touchkey.ko
 
 #all operation with rootfs should be finished here, root partition will mounted read-only . d.moskvitin
     mount rootfs rootfs / ro remount
@@ -331,7 +343,7 @@ on boot
     write /sys/devices/virtual/net/rmnet0/timeout_suspend 5000000
 
 # Define the oom_adj values for the classes of processes that can be
-# killed by the kernel.  These are used in ActivityManagerService.
+# killed by the kernel. These are used in ActivityManagerService.
     setprop ro.FOREGROUND_APP_ADJ 0
     setprop ro.VISIBLE_APP_ADJ 1
     setprop ro.SECONDARY_SERVER_ADJ 2
@@ -342,7 +354,7 @@ on boot
     setprop ro.EMPTY_APP_ADJ 15
 
 # Define the memory thresholds at which the above process classes will
-# be killed.  These numbers are in pages (4k).
+# be killed. These numbers are in pages (4k).
     setprop ro.FOREGROUND_APP_MEM 1536
     setprop ro.VISIBLE_APP_MEM 2048
     setprop ro.SECONDARY_SERVER_MEM 4096
@@ -366,11 +378,11 @@ on boot
 
     # Tweak background writeout
     write /proc/sys/vm/dirty_expire_centisecs 200
-    write /proc/sys/vm/dirty_background_ratio  5
+    write /proc/sys/vm/dirty_background_ratio 5
 
-    # permissions 
+    # permissions
 
-    chmod 666 /system/usr/keychars/s3c-keypad.kcm.bin 
+    chmod 666 /system/usr/keychars/s3c-keypad.kcm.bin
 
     # Permissions for System Server and daemons.
     chown radio system /sys/android_power/state
@@ -436,12 +448,12 @@ on boot
     chmod 0777 /dev/accelerometer
 
 # Define TCP buffer sizes for various networks
-#   ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
+# ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
     setprop net.tcp.buffersize.default 4096,87380,110208,4096,16384,110208
-    setprop net.tcp.buffersize.wifi    4095,87380,110208,4096,16384,110208
-    setprop net.tcp.buffersize.umts    4094,87380,110208,4096,16384,110208
-    setprop net.tcp.buffersize.edge    4093,26280,35040,4096,16384,35040
-    setprop net.tcp.buffersize.gprs    4092,8760,11680,4096,8760,11680
+    setprop net.tcp.buffersize.wifi 4095,87380,110208,4096,16384,110208
+    setprop net.tcp.buffersize.umts 4094,87380,110208,4096,16384,110208
+    setprop net.tcp.buffersize.edge 4093,26280,35040,4096,16384,35040
+    setprop net.tcp.buffersize.gprs 4092,8760,11680,4096,8760,11680
 
     # for Bluetooth
     chown bluetooth bluetooth /sys/module/bluetooth_power/parameters/power
@@ -458,7 +470,7 @@ on boot
     chmod 0777 /sys/class/rfkill/rfkill0/state
     chmod 0777 /sys/class/rfkill/rfkill1/state
     chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
-    chown bluetooth bluetooth /sys/class/rfkill/rfkill1/state 
+    chown bluetooth bluetooth /sys/class/rfkill/rfkill1/state
 
     chmod 6777 /system/bin/brcm_dutMode
 
@@ -512,7 +524,7 @@ service nexus /system/bin/nexus
     socket nexus stream 0660 root system
     disabled
 #service mountd /system/bin/mountd
-#    socket mountd stream 0660 root mount
+# socket mountd stream 0660 root mount
 
 service debuggerd /system/bin/debuggerd
 
@@ -525,8 +537,8 @@ service ril-daemon /system/bin/rild
     group radio cache inet misc
     
 #service glgps /system/bin/gpsd/glgps_samsungJupiter -c /system/etc/jupiter.xml
-#    user root
-#    group root
+# user root
+# group root
 
 #added for STE GPS
 service agpsd /system/bin/agpsd
@@ -555,7 +567,7 @@ service bootanim /system/bin/bootanimation
     group graphics
     disabled
     oneshot
-	
+
 # to enable wifi
 service wpa_supplicant /system/bin/wpa_supplicant -Dwext -ieth0 -c/data/wifi/bcm_supp.conf
    disabled
@@ -588,7 +600,7 @@ service btld /system/bin/logwrapper /system/bin/btld -hb 3000000 -hp /dev/s3c241
     disabled
     oneshot
 
-# Start DTUN OBEXD  -----------------------------------------
+# Start DTUN OBEXD -----------------------------------------
 service obexd /system/bin/logwrapper /system/bin/obexd
     #socket bluetooth stream 660 bluetooth bluetooth
     #socket dbus_bluetooth stream 660 bluetooth bluetooth
@@ -663,18 +675,18 @@ service dumpstate /system/bin/dumpstate -s
     disabled
     oneshot
     
-service immvibed /system/bin/immvibed 
-	oneshot
+service immvibed /system/bin/immvibed
+    oneshot
 
-service immvbsd /system/bin/immvbsd 
-	oneshot
+service immvbsd /system/bin/immvbsd
+    oneshot
 
 # to enable wifi
 on property:init.svc.wpa_supplicant=stopped
     stop dhcpcd
 
 on property:init.svc.dhcpcd=stopped
-#    dhcpcd -k eth0
+# dhcpcd -k eth0
 # end of wifi
 
 # for Mobile AP
