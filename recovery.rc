@@ -127,13 +127,13 @@ loglevel 3
 
     ###################################################################    
     # create dbdata partition
-    #mkdir /dbdata
-    #mount rfs /dev/block/stl10 /dbdata nosuid nodev check=no
-    #mkdir /dbdata/databases
-    #chown system system /dbdata
-    #chown system system /dbdata/databases
-    #chmod 0771 /dbdata
-    #chmod 0777 /dbdata/databases   
+    mkdir /dbdata
+    mount rfs /dev/block/stl10 /dbdata nosuid nodev check=no
+    mkdir /dbdata/databases
+    chown system system /dbdata
+    chown system system /dbdata/databases
+    chmod 0771 /dbdata
+    chmod 0777 /dbdata/databases   
     ###################################################################  
 
     # Create dump dir and collect dumps.
