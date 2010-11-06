@@ -27,7 +27,7 @@ loglevel 3
     insmod /lib/modules/vibrator.ko
 
 #add booting sound property
-#	setprop audioflinger.bootsnd 1
+# setprop audioflinger.bootsnd 1
 
 # Backward compatibility
     symlink /system/etc /etc
@@ -74,12 +74,12 @@ loglevel 3
 
     # Directory-target for where the secure container
     # imagefile directory will be bind-mounted
-    mkdir /mnt/secure/asec  0700 root root
+    mkdir /mnt/secure/asec 0700 root root
     mkdir /mnt/secure/asec_inter 0700 root root
     mkdir /mnt/secure/asec_exter 0700 root root
 
     # Secure container public mount points.
-    mkdir /mnt/asec  0700 root system
+    mkdir /mnt/asec 0700 root system
     mount tmpfs tmpfs /mnt/asec mode=0755,gid=1000
 
     write /proc/sys/kernel/panic_on_oops 1
@@ -125,7 +125,7 @@ loglevel 3
     chown system system /data
     chmod 0771 /data
 
-    ###################################################################    
+    ###################################################################
     # create dbdata partition
     mkdir /dbdata
     mount rfs /dev/block/stl10 /dbdata nosuid nodev check=no
@@ -133,8 +133,8 @@ loglevel 3
     chown system system /dbdata
     chown system system /dbdata/databases
     chmod 0771 /dbdata
-    chmod 0777 /dbdata/databases   
-    ###################################################################  
+    chmod 0777 /dbdata/databases
+    ###################################################################
 
     # Create dump dir and collect dumps.
     # Do this before we mount cache so eventually we can use cache for
@@ -189,7 +189,7 @@ on boot
     setrlimit 13 40 40
 
 # Define the oom_adj values for the classes of processes that can be
-# killed by the kernel.  These are used in ActivityManagerService.
+# killed by the kernel. These are used in ActivityManagerService.
     setprop ro.FOREGROUND_APP_ADJ 0
     setprop ro.VISIBLE_APP_ADJ 1
     setprop ro.SECONDARY_SERVER_ADJ 2
@@ -200,7 +200,7 @@ on boot
     setprop ro.EMPTY_APP_ADJ 15
 
 # Define the memory thresholds at which the above process classes will
-# be killed.  These numbers are in pages (4k).
+# be killed. These numbers are in pages (4k).
     setprop ro.FOREGROUND_APP_MEM 1536
     setprop ro.VISIBLE_APP_MEM 2048
     setprop ro.SECONDARY_SERVER_MEM 4096
@@ -210,8 +210,8 @@ on boot
     setprop ro.CONTENT_PROVIDER_MEM 5632
     setprop ro.EMPTY_APP_MEM 6144
 
-	setprop wifi.interface "eth0"
-	setprop ro.bt.bdaddr_path "/data/misc/bluetooth/bt_addr"
+setprop wifi.interface "eth0"
+setprop ro.bt.bdaddr_path "/data/misc/bluetooth/bt_addr"
 
 # Write value must be consistent with the above properties.
 # Note that the driver only supports 6 slots, so we have HOME_APP at the
@@ -227,7 +227,7 @@ on boot
 
     # Tweak background writeout
     write /proc/sys/vm/dirty_expire_centisecs 200
-    write /proc/sys/vm/dirty_background_ratio  5
+    write /proc/sys/vm/dirty_background_ratio 5
 
     # Permissions for System Server and daemons.
     chown radio system /sys/android_power/state
@@ -243,7 +243,7 @@ on boot
     chmod 0660 /sys/power/wake_unlock
     chown system system /sys/class/timed_output/vibrator/enable
     chown system system /sys/class/leds/keyboard-backlight/brightness
-#    chown system system /sys/class/leds/lcd-backlight/brightness
+# chown system system /sys/class/leds/lcd-backlight/brightness
     chown system system /sys/class/backlight/s5p_bl/brightness
     chown system system /sys/class/leds/button-backlight/brightness
     chown system system /sys/class/leds/jogball-backlight/brightness
@@ -280,23 +280,23 @@ on boot
     chmod 0777 /dev/proximity
 
 # Define TCP buffer sizes for various networks
-#   ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
+# ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
     setprop net.tcp.buffersize.default 4096,87380,110208,4096,16384,110208
-    setprop net.tcp.buffersize.wifi    4095,87380,110208,4096,16384,110208
-    setprop net.tcp.buffersize.umts    4094,87380,110208,4096,16384,110208
-    setprop net.tcp.buffersize.edge    4093,26280,35040,4096,16384,35040
-    setprop net.tcp.buffersize.gprs    4092,8760,11680,4096,8760,11680
+    setprop net.tcp.buffersize.wifi 4095,87380,110208,4096,16384,110208
+    setprop net.tcp.buffersize.umts 4094,87380,110208,4096,16384,110208
+    setprop net.tcp.buffersize.edge 4093,26280,35040,4096,16384,35040
+    setprop net.tcp.buffersize.gprs 4092,8760,11680,4096,8760,11680
 
 
 # Audio Tunning Files
-	chmod 0777 /system/etc/audio/stream_speaker.txt
-	chmod 0777 /system/etc/audio/stream_headset.txt
-	chmod 0777 /system/etc/audio/stream_earpiece.txt
-	chmod 0777 /system/etc/audio/situation.txt
-	chmod 0777 /system/etc/audio/aeqcoe.txt
-	chmod 0777 /system/etc/audio/soundbooster.txt
-	chmod 0777 /system/etc/audio/srstunning.txt
-	chmod 0777 /system/etc/audio/ArkamysTuning.txt
+chmod 0777 /system/etc/audio/stream_speaker.txt
+chmod 0777 /system/etc/audio/stream_headset.txt
+chmod 0777 /system/etc/audio/stream_earpiece.txt
+chmod 0777 /system/etc/audio/situation.txt
+chmod 0777 /system/etc/audio/aeqcoe.txt
+chmod 0777 /system/etc/audio/soundbooster.txt
+chmod 0777 /system/etc/audio/srstunning.txt
+chmod 0777 /system/etc/audio/ArkamysTuning.txt
 
 # +++++++++++++++++++++++++++++++++++++++++++
 # for Bluetooth

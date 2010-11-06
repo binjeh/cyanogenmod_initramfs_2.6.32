@@ -3,7 +3,7 @@ on init
 
 sysclktz 0
 
-loglevel 3
+loglevel 9
 
 # setup the global environment
     export PATH /sbin:/system/sbin:/system/bin:/system/xbin
@@ -21,20 +21,23 @@ loglevel 3
     export TERMINFO /system/etc/terminfo
     export TMPDIR /data/local/tmp
 
-    # ko files for 3D
+# ko files for 3D
     insmod /modules/pvrsrvkm.ko
     insmod /modules/s3c_lcd.ko
     insmod /modules/s3c_bc.ko
 
-    # ko files for vibrator
+# ko files for vibrator
     insmod /lib/modules/vibrator.ko
 
-	# ko files for Fm radio
-	insmod /lib/modules/Si4709_driver.ko
+# ko files for Fm radio
+    insmod /lib/modules/Si4709_driver.ko
 	
 # Backward compatibility
     symlink /system/etc /etc
     symlink /sys/kernel/debug /d
+
+# Interface for Wifi
+    setprop wifi.interface "eth0"
 
 # create mountpoints
     mkdir /mnt 0775 root system
@@ -112,13 +115,11 @@ loglevel 3
 
 # mount mtd partitions
     # Mount /system rw first to give the filesystem a chance to save a checkpoint
-    #mount yaffs2 mtd@system /system
+    # mount yaffs2 mtd@system /system
     mount rfs /dev/block/stl9 /system
 
     # We chown/chmod /data again so because mount is run as root + defaults
     # mount yaffs2 mtd@userdata /data nosuid nodev
-# use movinand second partition as /data. d.moskvitin
-    #exec apply_system_policy /dev/block/stl10
     exec apply_disk_policy
     mkdir /data
     mount rfs /dev/block/mmcblk0p2 /data nosuid nodev check=no
@@ -172,11 +173,11 @@ loglevel 3
     chown radio radio /efs
     chmod 0771 /efs
 
-    #change permissions on vmallocinfo so we can grab it from bugreports
+#change permissions on vmallocinfo so we can grab it from bugreports
     chown root log /proc/vmallocinfo
     chmod 0440 /proc/vmallocinfo
 
-    #change permissions on kmsg & sysrq-trigger so bugreports can grab kthread stacks
+#change permissions on kmsg & sysrq-trigger so bugreports can grab kthread stacks
     chown root system /proc/kmsg
     chmod 0440 /proc/kmsg
     chown root system /proc/sysrq-trigger
@@ -194,6 +195,8 @@ loglevel 3
     chown root system /sys/class/gpio/gpio120/value
     chmod 664 /sys/class/gpio/gpio120/value
 
+    chmod 600 /system/etc/secgps.conf
+
 # create basic filesystem structure
     mkdir /data/misc 01771 system misc
     mkdir /data/misc/bluetoothd 0770 bluetooth bluetooth
@@ -207,7 +210,7 @@ loglevel 3
     # give system access to wpa_supplicant.conf for backup and restore
     mkdir /data/misc/wifi 0770 wifi wifi
     chmod 0770 /data/misc/wifi
-	mkdir /data/misc/wifi/sockets 0770 wifi wifi
+    mkdir /data/misc/wifi/sockets 0770 wifi wifi
     mkdir /data/misc/dhcp 0770 dhcp dhcp
     mkdir /data/wifi 0770 wifi wifi
     chmod 0660 /data/misc/wifi/wpa_supplicant.conf
@@ -258,8 +261,8 @@ loglevel 3
     chmod 0775 /dev/socket
 
 # mount modules
-# insmod /lib/modules/dpram.ko
-# insmod /lib/modules/multipdp.ko
+    # insmod /lib/modules/dpram.ko
+    # insmod /lib/modules/multipdp.ko
     insmod /lib/modules/onedram.ko
     insmod /lib/modules/svnet.ko
     insmod /lib/modules/modemctl.ko
@@ -282,6 +285,9 @@ on boot
 # set RLIMIT_NICE to allow priorities from 19 to -20
     setrlimit 13 40 40
 
+# Set timeout value for rmnet stats.
+    write /sys/devices/virtual/net/rmnet0/timeout_suspend 5000000
+
 # Define the oom_adj values for the classes of processes that can be
 # killed by the kernel.  These are used in ActivityManagerService.
     setprop ro.FOREGROUND_APP_ADJ 0
@@ -303,9 +309,8 @@ on boot
     setprop ro.HIDDEN_APP_MEM 5120
     setprop ro.CONTENT_PROVIDER_MEM 5632
     setprop ro.EMPTY_APP_MEM 6144
-	
-	setprop wifi.interface "eth0"
-	setprop ro.bt.bdaddr_path "/data/misc/bluetooth/bt_addr"
+
+    setprop ro.bt.bdaddr_path "/data/misc/bluetooth/bt_addr"
 
 # Write value must be consistent with the above properties.
 # Note that the driver only supports 6 slots, so we have HOME_APP at the
@@ -323,6 +328,9 @@ on boot
     write /proc/sys/vm/dirty_expire_centisecs 200
     write /proc/sys/vm/dirty_background_ratio  5
 
+    # Permissions
+    chmod 666 /system/usr/keychars/s3c-keypad.kcm.bin 
+
     # Permissions for System Server and daemons.
     chown radio system /sys/android_power/state
     chown radio system /sys/android_power/request_state
@@ -332,7 +340,7 @@ on boot
     chown radio system /sys/power/state
     chown radio system /sys/power/wake_lock
     chown radio system /sys/power/wake_unlock
-	chown radio system /sys/power/dvfslock_ctrl
+    chown radio system /sys/power/dvfslock_ctrl
     chown radio system /sys/camera_led_status/led_ril_status
     chown system system /sys/camera_led_status/led_wimax_status
     chown system system /sys/camera_led_status/led_hotspot_status
@@ -340,7 +348,7 @@ on boot
     chmod 0660 /sys/power/state
     chmod 0660 /sys/power/wake_lock
     chmod 0660 /sys/power/wake_unlock
-	chmod 0660 /sys/power/dvfslock_ctrl    		
+    chmod 0660 /sys/power/dvfslock_ctrl    		
     chown system system /sys/class/timed_output/vibrator/enable
     chown system system /sys/class/leds/keyboard-backlight/brightness
     chown system system /sys/class/leds/lcd-backlight/brightness
@@ -564,29 +572,23 @@ service dbus /system/bin/dbus-daemon --system --nofork
 
 # for Broadcom Bluetooth
 service btld /system/bin/logwrapper /system/bin/btld -hb 3000000 -hp /dev/s3c2410_serial0 -lpm 1
-    # init.rc does not yet support applying capabilities, so run as root and
-    # let btld drop uid to bluetooth with the right linux capabilities
+    user root
     group bluetooth net_bt_admin
     disabled
     oneshot
 
 # Start DTUN OBEXD  -----------------------------------------
 service obexd /system/bin/logwrapper /system/bin/obexd
-    #socket bluetooth stream 660 bluetooth bluetooth
-    #socket dbus_bluetooth stream 660 bluetooth bluetooth
-    # init.rc does not yet support applying capabilities, so run as root and
-    # let obexd drop uid to bluetooth with the right linux capabilities
     user root
     group bluetooth net_bt_admin
     disabled
     oneshot
 
  # Start BLUETOOTHD  -----------------------------------------
-service bluetoothd /system/bin/logwrapper /system/bin/bluetoothd -n -d 
+service bluetoothd /system/bin/logwrapper /system/bin/bluetoothd -n /etc/bluez/main.conf
     socket bluetooth stream 660 bluetooth bluetooth
     socket dbus_bluetooth stream 660 bluetooth bluetooth
-    # init.rc does not yet support applying capabilities, so run as root and
-    # let bluetoothd drop uid to bluetooth with the right linux capabilities
+    user root
     group bluetooth net_bt_admin misc
     disabled
 
@@ -619,7 +621,7 @@ service installd /system/bin/installd
 
 #magnetic sensor yamaha
 	service sensor-daemon /system/bin/sensorserver_yamaha
-	user compass
+	user system
 	group system
 
 service racoon /system/bin/racoon
@@ -652,7 +654,6 @@ service immvbsd /system/bin/immvbsd
 service tvout /system/bin/tvoutserver
 user system
 group system
-
 
 service dumpstate /system/bin/dumpstate -s
     socket dumpstate stream 0660 shell log
