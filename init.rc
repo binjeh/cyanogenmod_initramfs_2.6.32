@@ -569,6 +569,12 @@ service dbus /system/bin/dbus-daemon --system --nofork
     user bluetooth
     group bluetooth net_bt_admin
 
+service hciattach /system/bin/hciattach -n /dev/s3c2410_serial0 any
+    # changing user to root from bluetooth is a potential security issue
+    user root
+    group bluetooth net_bt_admin misc
+    disabled
+    oneshot
 
 # for Broadcom Bluetooth
 service btld /system/bin/logwrapper /system/bin/btld -hb 3000000 -hp /dev/s3c2410_serial0 -lpm 1
