@@ -545,7 +545,7 @@ service bootanim /system/bin/bootanimation
     disabled
     oneshot
 
-service wpa_supplicant /system/bin/wpa_supplicant -Dwext -ieth0 -c/system/etc/wpa_supplicant.conf
+service wpa_supplicant /system/bin/wpa_supplicant -Dwext -ieth0 -c/system/etc/wifi/wpa_supplicant.conf
    disabled
    oneshot
 
