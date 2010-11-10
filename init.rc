@@ -411,19 +411,19 @@ on boot
     exec /system/bin/sysinit
 
 # Audio Tunning Files
-	chmod 0777 /system/etc/audio/stream_speaker.txt
-	chmod 0777 /system/etc/audio/stream_headset.txt
-	chmod 0777 /system/etc/audio/stream_earpiece.txt
-	chmod 0777 /system/etc/audio/situation.txt
-	chmod 0777 /system/etc/audio/aeqcoe.txt
-	chmod 0777 /system/etc/audio/soundbooster.txt
-	chmod 0777 /system/etc/audio/srstunning.txt
-	chmod 0777 /system/etc/audio/ArkamysTuning.txt
+    chmod 0777 /system/etc/audio/stream_speaker.txt
+    chmod 0777 /system/etc/audio/stream_headset.txt
+    chmod 0777 /system/etc/audio/stream_earpiece.txt
+    chmod 0777 /system/etc/audio/situation.txt
+    chmod 0777 /system/etc/audio/aeqcoe.txt
+    chmod 0777 /system/etc/audio/soundbooster.txt
+    chmod 0777 /system/etc/audio/srstunning.txt
+    chmod 0777 /system/etc/audio/ArkamysTuning.txt
 
-	write	/sys/class/block/mmcblk0/queue/iosched/low_latency 0
-	write	/sys/class/block/mmcblk1/queue/iosched/low_latency 0
-	write	/sys/class/block/stl10/queue/iosched/low_latency 0
-	write	/sys/class/block/stl9/queue/iosched/low_latency 0
+    write /sys/class/block/mmcblk0/queue/iosched/low_latency 0
+    write /sys/class/block/mmcblk1/queue/iosched/low_latency 0
+    write /sys/class/block/stl10/queue/iosched/low_latency 0
+    write /sys/class/block/stl9/queue/iosched/low_latency 0
 
 # +++++++++++++++++++++++++++++++++++++++++++
 # for Bluetooth
@@ -447,10 +447,8 @@ on boot
 # +++++++++++++++++++++++++++++++++++++++++++
 # for datarouter
     chown system system /dev/ttygs0
-    chown system system /dev/dun
-  
-         
- # +++++++++++++++++++++++++++++++++++++++++++
+    chown system system /dev/dun 
+# +++++++++++++++++++++++++++++++++++++++++++
 
     class_start default
 
@@ -515,8 +513,8 @@ service DR-deamon /system/bin/drexe
     group system radio inet net_raw
 	
 service mobex-daemon /system/bin/npsmobex
-	user system
-	group system inet
+    user system
+    group system inet
 
 service glgps /system/bin/gpsd/glgps_samsungJupiter -c /system/etc/jupiter.xml
     user system
@@ -569,6 +567,7 @@ service dbus /system/bin/dbus-daemon --system --nofork
     user bluetooth
     group bluetooth net_bt_admin
 
+# for Broadcom Bluetooth
 service hciattach /system/bin/hciattach -n /dev/s3c2410_serial0 any
     # changing user to root from bluetooth is a potential security issue
     user root
@@ -576,7 +575,6 @@ service hciattach /system/bin/hciattach -n /dev/s3c2410_serial0 any
     disabled
     oneshot
 
-# for Broadcom Bluetooth
 service btld /system/bin/logwrapper /system/bin/btld -hb 3000000 -hp /dev/s3c2410_serial0 -lpm 1
     user root
     group bluetooth net_bt_admin
@@ -626,9 +624,7 @@ service installd /system/bin/installd
     socket installd stream 600 system system
 
 #magnetic sensor yamaha
-	service sensor-daemon /system/bin/sensorserver_yamaha
-	user system
-	group system
+    service sensor-daemon /system/bin/sensorserver_yamaha
 
 service racoon /system/bin/racoon
     socket racoon stream 600 system system
@@ -654,12 +650,15 @@ service immvibed /system/bin/immvibed
     group shell
 	oneshot
 
-service immvbsd /system/bin/immvbsd
-	oneshot
+# not available on i9000
+#service immvbsd /system/bin/immvbsd
+#	oneshot
 
-service tvout /system/bin/tvoutserver
-user system
-group system
+
+# broken
+#service tvout /system/bin/tvoutserver
+#user system
+#group system
 
 service dumpstate /system/bin/dumpstate -s
     socket dumpstate stream 0660 shell log
